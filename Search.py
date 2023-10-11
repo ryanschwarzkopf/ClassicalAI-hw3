@@ -1,12 +1,36 @@
-def build():
+
+def build(lines):
     world = []
-    
+    lineno = 0
+    for line in lines:
+        vals = line.split(' ')
+        for i, val in enumerate(vals):
+            if val == 's':
+                start = [lineno, i]
+            if val == 'g':
+                goal = [lineno, i]
+        world.append(line.split(' '))
+        lineno+=1
+    return start, goal, world
 
 def BFS():
     pass
 
-def DFS():
-    pass
+'''
+    dfs to each node
+'''
+def DFS(graph, i, j):
+    if i < 0 or j < 0 or i >= len(graph) or j >= len(graph[0]): return
+    if graph[i][j] != '-': return
+    graph[i][j] = 0 # set to 0 if visited so we don't go back.
+    DFS(graph,i-1,j-1)
+    DFS(graph,i,j-1)
+    DFS(graph,i+1,j-1)
+    DFS(graph,i-1,j)
+    DFS(graph,i+1,j)
+    DFS(graph,i-1,j+1)
+    DFS(graph,i,j+1)
+    DFS(graph,i+1,j+1)
 
 def Astar():
     pass
@@ -41,10 +65,12 @@ def main():
     fp = open(path, 'r', encoding='utf-8')
     lines = fp.readlines()
     fp.close()
-    
-    world = build(lines)
-    
-    
+    width = lines[0]
+    height = lines[1]
+    del lines[0]
+    del lines[1]
+    start, goal, world = build(lines)
+
 
 if __name__ == "__main__":
     main()
