@@ -1,15 +1,22 @@
 
 def build(lines):
     world = []
+    start = []
+    goal = []
     lineno = 0
     for line in lines:
+        line = line.replace('\n', '')
+        line = line.rstrip('\t')
+        line = line.replace('\t', ' ')
+        
         vals = line.split(' ')
         for i, val in enumerate(vals):
             if val == 's':
                 start = [lineno, i]
             if val == 'g':
                 goal = [lineno, i]
-        world.append(line.split(' '))
+        if line != '':
+            world.append(line.split(' '))
         lineno+=1
     return start, goal, world
 
@@ -49,14 +56,14 @@ def main():
     import os
 
     path = ''           # path to gridworld file
-    search = 'A*'       # Default to A* search
-    heur = 'SLine'      # Default to Straight-line heuristic
+    method = 'Astar'       # Default to A* search
+    heur = 'S'      # Default to Straight-line heuristic
 
     for i in range(len(sys.argv)):
         if sys.argv[i] == '-i':
             path = os.path.abspath(sys.argv[i+1])
         if sys.argv[i] == '-a':
-            search = sys.argv[i+1]
+            method = sys.argv[i+1]
         if sys.argv[i] == '-h':
             heur = sys.argv[i+1]
     if path == '':
@@ -65,12 +72,20 @@ def main():
     fp = open(path, 'r', encoding='utf-8')
     lines = fp.readlines()
     fp.close()
-    width = lines[0]
-    height = lines[1]
+    width = int(lines[0])
+    height = int(lines[1])
+    # delete the first two lines of the file with the width and height specifiers
     del lines[0]
-    del lines[1]
-    start, goal, world = build(lines)
+    del lines[0]
 
+    start, goal, world = build(lines)
+    
+    if method == 'Astar':
+        path = Astar(start, goal, heur, world)
+    elif method == 'DFS':
+        path = DFS(start, goal, heur, world)
+    elif method == 'BFS':
+        path = BFS(start, goal, heur, world)
 
 if __name__ == "__main__":
     main()
