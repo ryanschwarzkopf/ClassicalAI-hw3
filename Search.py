@@ -20,36 +20,42 @@ def build(lines):
         lineno+=1
     return start, goal, world
 
-def BFS():
-    pass
-
 '''
     dfs to each node
 '''
-def DFS(graph, i, j):
+def DFS(graph, i, j, path, visited):
     if i < 0 or j < 0 or i >= len(graph) or j >= len(graph[0]): return
-    if graph[i][j] != '-': return
-    graph[i][j] = 0 # set to 0 if visited so we don't go back.
-    DFS(graph,i-1,j-1)
-    DFS(graph,i,j-1)
-    DFS(graph,i+1,j-1)
-    DFS(graph,i-1,j)
-    DFS(graph,i+1,j)
-    DFS(graph,i-1,j+1)
-    DFS(graph,i,j+1)
-    DFS(graph,i+1,j+1)
+    if graph[i][j] == 'x' or (i,j) in visited: return
+    if ((i,j) in visited): return
+    if graph[i][j] == 'g':
+        path.append((i,j))
+        return path
+    visited.add((i,j))
+    print(visited)
+    
+    moves = [(0, -1), (-1, 0), (0, 1), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+    for ci, cj in moves:
+        path.append((i,j))
+        answer = DFS(graph,i+ci,j+cj, path, visited)
+        if answer != None: return answer
+
+def BFS():
+    pass
 
 def Astar():
     pass
 
-def manhattan():
-    pass
+# distance between two points along axis
+def M(x, y, gx, gy):
+    return abs(gx - x) + abs(gy - y)
 
-def Sline():
-    pass
+# euclidean distance between two points
+def S(x, y, gx, gy):
+    return (((gx - x)**2)+((gy - y)**2))**(0.5)
 
-def HVert():
-    pass
+# minimum distance among x or y axis to goal
+def HV(x, y, gx, gy):
+    return min(abs(gx - x), abs(gy - y))
 
 def main():
     import sys
@@ -79,14 +85,15 @@ def main():
     del lines[0]
 
     start, goal, world = build(lines)
-    
-    if method == 'Astar':
-        path = Astar(start, goal, heur, world)
-    elif method == 'DFS':
-        path = DFS(start, goal, heur, world)
-    elif method == 'BFS':
-        path = BFS(start, goal, heur, world)
 
+    if method == 'Astar':
+        path = Astar(world, start[0], start[1], goal[0], goal[1], heur)
+    elif method == 'DFS':
+        path = DFS(world, start[0], start[1], [], set())
+    elif method == 'BFS':
+        path = BFS(world, start[0], start[1], [])
+
+    print(path)
 if __name__ == "__main__":
     main()
 
