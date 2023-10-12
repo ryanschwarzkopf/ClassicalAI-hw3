@@ -58,6 +58,7 @@ def DFS(graph, at, path, visited):
 '''
 def BFS(graph, i, j):
     vis = [[False for i in range(len(graph[0]))] for i in range(len(graph))]
+    parent = [[None for _ in range(len(graph[0]))] for _ in range(len(graph))]
     dRow = [0, -1, 0, 1, -1, -1, 1, 1]
     dCol = [-1, 0, 1, 0, -1, 1, -1, 1]
     
@@ -79,11 +80,11 @@ def BFS(graph, i, j):
             if(isValid(graph, vis, adjx, adjy,(x - dRow[i]),(y - dCol[i]), dRow[i], dCol[i])):
                 q.append((adjx, adjy))
                 vis[adjx][adjy] = True
+                parent[adjx][adjy] = (x, y)
                 if(graph[adjx][adjy] == "g"):
-                    print("Found Goal!!\n")
-                    return vis
-    
-    return vis
+                    return backtrack(parent, (i,j), (adjx, adjy))
+    return None
+
 # Check if the current cell is a valid move
 def isValid(graph, vis, row, col, nRow, nCol, x, y):
     if row < 0 or col < 0 or row >= len(graph) or col >= len(graph[0]):
@@ -98,9 +99,22 @@ def isValid(graph, vis, row, col, nRow, nCol, x, y):
         if nRow < 0 or nCol < 0 or nRow >= len(graph) or nCol >= len(graph[0]):
             return False
         if(vis[nRow + x ][nCol] and vis[nRow][nCol + y]):
-            return False
-        
+            return False   
     return True
+
+#Saves a found path
+def backtrack(parent, start, end):
+    x = end[0]
+    y = end[1]
+    path = []
+    while (x,y) != start:
+        path.append((x,y))
+        if parent[x][y] is not None:
+            x, y = parent[x][y]
+        else:
+            break
+    path.reverse()
+    return path
 
 def Astar():
     pass
@@ -116,19 +130,6 @@ def S(x, y, gx, gy):
 # minimum distance among x or y axis to goal
 def HV(x, y, gx, gy):
     return min(abs(gx - x), abs(gy - y))
-
-#Helper function that prints the visited nodes
-def print_output(vis):
-    tmp = 0
-    for row in vis:
-        for cell in row:
-            if(cell == False):
-                tmp = 0
-            else:
-                tmp = 1
-            # 0 - Not Visited, 1 - Visited
-            print(tmp, end= " ")
-        print()
 
 def main():
     path = ''           # path to gridworld file
@@ -160,12 +161,11 @@ def main():
         path = Astar(world, start[0], start[1], goal[0], goal[1], heur)
     elif method == 'DFS':
         path = DFS(world, start, [], set())
-        if path == None: print('No path found.')
-        else: print(path)
     elif method == 'BFS':
         path = BFS(world, start[0], start[1])
     
-    # print_output(path)
+    if path == None: print('No path found.')
+    else: print(path)
 
 if __name__ == "__main__":
     main()
