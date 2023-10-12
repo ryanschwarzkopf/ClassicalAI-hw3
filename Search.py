@@ -1,3 +1,4 @@
+from collections import deque as queue
 
 def build(lines):
     world = []
@@ -39,8 +40,44 @@ def DFS(graph, i, j, path, visited):
         answer = DFS(graph,i+ci,j+cj, path, visited)
         if answer != None: return answer
 
-def BFS():
-    pass
+def BFS(graph, i, j):
+    vis = [[False for i in range(len(graph[0]))] for i in range(len(graph))]
+    dRow = [0, -1, 0, 1, -1, -1, 1, 1]
+    dCol = [-1, 0, 1, 0, -1, 1, -1, 1]
+    
+    q = queue()
+    
+    'Row i, j column'
+    q.append((i, j))
+    
+    vis[i][j] = True
+    
+    while(len(q) > 0):
+        cell = q.popleft()
+        x = cell[0]
+        y = cell[1]
+        
+        for i in range(8):
+            adjx = x + dRow[i]
+            adjy = y + dCol[i]
+            if(isValid(graph, vis, adjx, adjy,dRow[i], dCol[i])):
+                q.append((adjx, adjy))
+                vis[adjx][adjy] = True
+                if(graph[adjx][adjy] == "g"):
+                    print("Found Goal!!\n")
+                    return vis
+    
+    return vis
+
+def isValid(graph, vis, row, col, dRow, dCol):
+    if row < 0 or col < 0 or row >= len(graph) or col >= len(graph[0]):
+        return False
+    if (vis[row][col]):
+        return False
+    if(graph[row][col] == "x"): 
+        return False
+
+    return True
 
 def Astar():
     pass
@@ -56,6 +93,18 @@ def S(x, y, gx, gy):
 # minimum distance among x or y axis to goal
 def HV(x, y, gx, gy):
     return min(abs(gx - x), abs(gy - y))
+
+def print_output(vis):
+    tmp = 0
+    for row in vis:
+        for cell in row:
+            if(cell == False):
+                tmp = 0
+            else:
+                tmp = 1
+            
+            print(tmp, end= " ")
+        print()
 
 def main():
     import sys
@@ -91,9 +140,10 @@ def main():
     elif method == 'DFS':
         path = DFS(world, start[0], start[1], [], set())
     elif method == 'BFS':
-        path = BFS(world, start[0], start[1], [])
+        path = BFS(world, start[0], start[1])
+    
+    print_output(path)
 
-    print(path)
 if __name__ == "__main__":
     main()
 
