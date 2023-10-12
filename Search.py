@@ -39,7 +39,10 @@ def DFS(graph, i, j, path, visited):
         path.append((i,j))
         answer = DFS(graph,i+ci,j+cj, path, visited)
         if answer != None: return answer
-
+        
+'''
+    bfs to each node
+'''
 def BFS(graph, i, j):
     vis = [[False for i in range(len(graph[0]))] for i in range(len(graph))]
     dRow = [0, -1, 0, 1, -1, -1, 1, 1]
@@ -60,7 +63,7 @@ def BFS(graph, i, j):
         for i in range(8):
             adjx = x + dRow[i]
             adjy = y + dCol[i]
-            if(isValid(graph, vis, adjx, adjy,dRow[i], dCol[i])):
+            if(isValid(graph, vis, adjx, adjy,(x - dRow[i]),(y - dCol[i]), dRow[i], dCol[i])):
                 q.append((adjx, adjy))
                 vis[adjx][adjy] = True
                 if(graph[adjx][adjy] == "g"):
@@ -68,15 +71,22 @@ def BFS(graph, i, j):
                     return vis
     
     return vis
-
-def isValid(graph, vis, row, col, dRow, dCol):
+# Check if the current cell is a valid move
+def isValid(graph, vis, row, col, nRow, nCol, x, y):
     if row < 0 or col < 0 or row >= len(graph) or col >= len(graph[0]):
         return False
     if (vis[row][col]):
         return False
     if(graph[row][col] == "x"): 
         return False
-
+    
+    #When moving diagonal we check if the path to it is not blocked 
+    if(x != 0 and y != 0):
+        if nRow < 0 or nCol < 0 or nRow >= len(graph) or nCol >= len(graph[0]):
+            return False
+        if(vis[nRow + x ][nCol] and vis[nRow][nCol + y]):
+            return False
+        
     return True
 
 def Astar():
@@ -94,6 +104,7 @@ def S(x, y, gx, gy):
 def HV(x, y, gx, gy):
     return min(abs(gx - x), abs(gy - y))
 
+#Helper function that prints the visited nodes
 def print_output(vis):
     tmp = 0
     for row in vis:
@@ -102,7 +113,7 @@ def print_output(vis):
                 tmp = 0
             else:
                 tmp = 1
-            
+            # 0 - Not Visited, 1 - Visited
             print(tmp, end= " ")
         print()
 
