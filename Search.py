@@ -102,6 +102,16 @@ def isValid(graph, vis, row, col, nRow, nCol, x, y):
             return False   
     return True
 
+'''
+1. Start with a tree that contains only the start state
+2. Pick a fringe node n with the smallest g(n) + h(n)
+3. If fringe node n represents a goal, then stop
+4. Expand fringe node n
+5. Go to 2
+'''
+def Astar():
+    pass
+
 #Saves a found path
 def backtrack(parent, start, end):
     x = end[0]
@@ -116,20 +126,18 @@ def backtrack(parent, start, end):
     path.reverse()
     return path
 
-def Astar():
-    pass
 
-# distance between two points along axis
-def M(x, y, gx, gy):
-    return abs(gx - x) + abs(gy - y)
+def getHeur(heur, x, y, gx, gy):
+    # manhattan distance: distance between two points along axis
+    if heur == 'M':
+        return abs(gx - x) + abs(gy - y)
+    # euclidean distance between two points
+    elif heur == 'S':
+        return (((gx - x)**2)+((gy - y)**2))**(0.5)
+    # chebyshev is max distance among an axis
+    elif heur == 'HV':
+        return max(abs(gx - x), abs(gy - y))
 
-# euclidean distance between two points
-def S(x, y, gx, gy):
-    return (((gx - x)**2)+((gy - y)**2))**(0.5)
-
-# minimum distance among x or y axis to goal
-def HV(x, y, gx, gy):
-    return min(abs(gx - x), abs(gy - y))
 
 def main():
     path = ''           # path to gridworld file
