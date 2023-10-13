@@ -2,7 +2,7 @@ import sys
 import os
 from collections import deque as queue
 import heapq
-    
+
 def build(lines):
     world = []
     start = []
@@ -104,12 +104,13 @@ def isValid(graph, vis, row, col, nRow, nCol, x, y):
 
 '''
 1. Start with a tree that contains only the start state
-2. Pick a fringe node n with the smallest g(n) + h(n)
+2. Pick a fringe node n with the smallest heuristic.
 3. If fringe node n represents a goal, then stop
 4. Expand fringe node n
 5. Go to 2
+(All actions have the same cost, so we can prioritize based on only the heuristic)
 '''
-def Astar():
+def Astar(world, start, goal, visited):
     pass
 
 #Saves a found path
@@ -173,7 +174,8 @@ def main():
         path = BFS(world, start[0], start[1])
     
     if path == None: print('No path found.')
-    else: print(path)
+    else:
+        print(f'A* search: Cost={len(path)}. Heuristic={heur} \n', path) if method == 'Astar' else print(f'{method} search: Cost={len(path)} \n', path)
 
 if __name__ == "__main__":
     main()
