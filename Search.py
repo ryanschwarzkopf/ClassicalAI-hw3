@@ -154,8 +154,33 @@ def isValid(graph, vis, row, col, nRow, nCol, x, y):
 5. Go to 2
 (All actions have the same cost, so we can prioritize based on only the heuristic)
 '''
-def Astar(world, start, goal, visited):
-    pass
+def Astar(graph, at, goal, path, curr, heur):
+    h = getHeur(heur, at[0], at[1], goal[0], goal[1])
+    heapq.heappush(curr, (h,at))
+    while curr:
+        node = heapq.heappop(curr)
+        print(node)
+        i, j = node[1][0], node[1][1]
+        path.append((i,j))
+        if graph[i][j] == 'g':
+            return path
+
+        moves = [(0, -1), (-1, 0), (0, 1), (1, 0)]
+        if i > 0 and graph[i-1][j] != 'x':
+            if j > 0 and graph[i][j-1] != 'x': moves.append((-1, -1))
+            if j < len(graph[0])-1 and graph[i][j+1] != 'x': moves.append((-1, 1))
+        if i < len(graph)-1 and graph[i+1][j] != 'x':
+            if j > 0 and graph[i][j-1] != 'x': moves.append((1, -1))
+            if j < len(graph[0])-1 and graph[i][j+1] != 'x': moves.append((1, 1))
+
+        for ci, cj in moves:
+            if graph[ci][cj] == 'x' and ci >= 0 and cj >= 0 and ci < len(graph) and cj < len(graph[0]):
+                continue
+            newi=i+ci
+            newj=j+cj
+            heuristic = getHeur(heur, newi, newj, goal[0], goal[1])
+            heapq.heappush(curr, (heuristic,[newi,newj]))
+    return None
 
 #Saves a found path
 def backtrack(parent, start, end):
@@ -211,7 +236,8 @@ def main():
     start, goal, world = build(lines)
 
     if method == 'Astar':
-        path = Astar(world, start[0], start[1], goal[0], goal[1], heur)
+        
+        path = Astar(world, start, goal, [], [], heur)
     elif method == 'DFS':
         path = DFS(world, start, [], set())
     elif method == 'BFS':
