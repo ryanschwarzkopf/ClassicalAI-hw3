@@ -1,3 +1,47 @@
+'''
+    Ryan Schwarzkopf
+    Alfredo Gutierrez
+    Oct 12, 2023
+    
+    The following is a description of the gridworld environment that your robot
+    will interact with. Consider a NxM matrix gridworld. Cells are either blocked
+    or unblocked. Blocked cells are marked as 'x'. Unblocked cells are marked as '_'
+    The start cell is denoted by 's' and the goal cell is denoted by 'g'.
+    
+    The robot can only move to one of the eight adjacent cells (i.e., the cells to
+    the north, northeast, east, southeast, south, southwest, west, and northwest
+    of the current cell). The exception is if the cell or the path to the cell is
+    blocked (a move to the northwest is invalid if both the north and the west
+    cells are blocked; even if the northwest cell is free). The game character then
+    seeks to determine the shortest unblocked path from its current cell to the goal
+    cell.
+    
+    Algorithms DFS, BFS, and A* are the algorithms used to find the path to the goal.
+    A* uses one of three heuristics: Euclidean distance, manhattan distance, or
+    chebyshev distance.
+    
+    Any text file can by used as a grid world. The first line must contain only the
+    number of rows (i.e. 5). The second line must contain the number of columns. 
+    The next lines are row wise with nodes separated by spaces. The gridworld must
+    have only one starting node and only one goal.
+    
+    Ex:
+    4
+    5
+    _ s _ _	_
+    x x x x	_
+    _ x x x	_
+    _ _ g _ _
+	
+    Please use this format for running the module:
+    Search.py -i <inputfile> -a BFS|DFS|Astar -h M|S|HV
+    
+    The default algorithm is A* and the default heuristic is chebyshev(HV)
+    DFS and BFS do not use any heuristic.
+    The module returns: if the path was found, algorithm used, the total cost,
+    and the path
+'''
+
 import sys
 import os
 from collections import deque as queue
@@ -143,7 +187,7 @@ def getHeur(heur, x, y, gx, gy):
 def main():
     path = ''           # path to gridworld file
     method = 'Astar'       # Default to A* search
-    heur = 'S'      # Default to Straight-line heuristic
+    heur = 'HV'      # Default to chebyshev heuristic
 
     for i in range(len(sys.argv)):
         if sys.argv[i] == '-i':
