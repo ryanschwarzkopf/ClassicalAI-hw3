@@ -1,0 +1,126 @@
+Input file: 1 
+DFS, Cost=3
+BFS, Cost=3
+Astar, S, Cost=3 
+Astar, M, Cost=3 
+Astar, HV, Cost=3 
+
+Input file: 2 
+DFS, Cost=6
+BFS, Cost=5
+Astar, S, Cost=6 
+Astar, M, Cost=6 
+Astar, HV, Cost=6 
+
+Input file: 3 
+DFS, Cost=16
+BFS, Cost=8
+Astar, S, Cost=5 
+Astar, M, Cost=5 
+Astar, HV, Cost=5 
+
+Input file: 4 
+DFS, Cost=9
+BFS, Cost=8
+Astar, S, Cost=9 
+Astar, M, Cost=9 
+Astar, HV, Cost=9 
+
+Input file: 5 
+DFS, No path found
+BFS, No path found
+Astar, S, No path found 
+Astar, M, No path found 
+Astar, HV, No path found 
+
+Input file: 6 
+DFS, Cost=23
+BFS, Cost=11
+Astar, S, Cost=13 
+Astar, M, Cost=13 
+Astar, HV, Cost=13 
+
+Input file: 7 
+DFS, Cost=21
+BFS, Cost=13
+Astar, S, Cost=10 
+Astar, M, Cost=10 
+Astar, HV, Cost=10 
+
+Input file: 8 
+DFS, Cost=65
+BFS, Cost=5
+Astar, S, Cost=36 
+Astar, M, Cost=36 
+Astar, HV, Cost=36 
+
+Input file: 9 
+DFS, Cost=211
+BFS, Cost=19
+Astar, S, Cost=18 
+Astar, M, Cost=18 
+Astar, HV, Cost=18 
+
+Input file: 10 
+DFS, Cost=1325
+BFS, Cost=1299
+Astar, S, Cost=1325 
+Astar, M, Cost=1325 
+Astar, HV, Cost=1325 
+
+Input file: 11 
+DFS, Cost=144
+BFS, Cost=22
+Astar, S, Cost=20 
+Astar, M, Cost=20 
+Astar, HV, Cost=20 
+
+Input file: 12 
+DFS, Cost=50
+BFS, Cost=32
+Astar, S, Cost=43 
+Astar, M, Cost=43 
+Astar, HV, Cost=43 
+
+Input file: 13 
+DFS, Cost=114
+BFS, Cost=12
+Astar, S, Cost=9 
+Astar, M, Cost=9 
+Astar, HV, Cost=9 
+
+Input file: 14 
+DFS, Cost=91
+BFS, Cost=61
+Astar, S, Cost=80 
+Astar, M, Cost=80 
+Astar, HV, Cost=80 
+
+Input file: 15 
+DFS, Cost=36
+BFS, Cost=25
+Astar, S, Cost=36 
+Astar, M, Cost=36 
+Astar, HV, Cost=36 
+
+Input file: 16 
+DFS, Cost=95
+BFS, Cost=47
+Astar, S, Cost=60 
+Astar, M, Cost=60 
+Astar, HV, Cost=60 
+
+Input file: 17 
+DFS, Cost=23
+BFS, Cost=11
+Astar, S, Cost=13 
+Astar, M, Cost=13 
+Astar, HV, Cost=13 
+
+Input file: 18 
+DFS, Cost=21
+BFS, Cost=8
+Astar, S, Cost=8 
+Astar, M, Cost=8 
+Astar, HV, Cost=8 
+

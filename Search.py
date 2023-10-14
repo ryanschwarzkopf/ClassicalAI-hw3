@@ -71,9 +71,8 @@ def build(lines):
 '''
     dfs to each node
 '''
-def DFS(graph, at, path, visited):
-    i, j = at[0], at[1]
-    
+def DFS(graph, start, path, visited):
+    i, j = start[0], start[1]
     path.append((i,j))
     visited.add((i,j))
     if graph[i][j] == 'g':
@@ -90,7 +89,7 @@ def DFS(graph, at, path, visited):
     for ci, cj in moves:
         newi=i+ci
         newj=j+cj
-        if((newi,newj) not in visited) and newi >= 0 and newj >= 0 and newi < len(graph) and newj < len(graph[0]) and graph[newi][newj] != 'x':
+        if((newi,newj) not in visited) and node_isValid(graph, (newi, newj)):
             answer = DFS(graph,[newi,newj], path, visited)
             if answer != None:
                 return answer
@@ -146,20 +145,27 @@ def isValid(graph, vis, row, col, nRow, nCol, x, y):
             return False   
     return True
 
+'''
+    Check if any node is a valid node:
+    (1) Node is on the graph.
+    (2) Node is not on an X
+'''
 def node_isValid(graph, node):
     i, j = node[0], node[1]
     if i >= 0 and j >= 0 and i < len(graph) and j < len(graph[0]) and graph[i][j] != 'x':
         return True
     return False
 
-def reconstruct_path(came_from, node):
-        print(came_from)
+'''
+    Starting with goal node, add to path and find previously visited node in dictionary
+'''
+def reconstruct_path(came_from, node, start):
         path = [node]
         i, j = node[0], node[1]
         temp = f'{i}, {j}'
         while temp in came_from:
-            temp = f'{node[0]}, {node[1]}'
             node = came_from[temp]
+            temp = f'{node[0]}, {node[1]}'
             path.append(node)
         path.reverse()
         return path
@@ -173,8 +179,9 @@ def reconstruct_path(came_from, node):
 (All actions have the same cost, so we can prioritize based on only the heuristic)
 '''
 def Astar(graph, start, goal, heur):
-    open, closed = [], []
-    heapq.heappush(open, (0, start))
+    open, closed, open_set = [], [], []
+    heapq.heappush(open, (0, (start[0],start[1])))
+    open_set.append((start[0],start[1]))
     
     came_from = {}
     g_score = {f'{i}, {j}': float('inf') for i in range(len(graph)) for j in range(len(graph[0]))}
@@ -183,14 +190,14 @@ def Astar(graph, start, goal, heur):
     f_score[f'{start[0]}, {start[1]}'] = getHeur(heur,start[0],start[1],goal[0],goal[1])
     
     while open:
-        # print(came_from)
         junk, node = heapq.heappop(open)
-        i, j = node[0], node[1]
+        open_set.remove(node)
         closed.append(node)
+        i, j = node[0], node[1]
         if graph[i][j] == 'g':
-            print(came_from[f'{i}, {j}'])
-            return reconstruct_path(came_from, node)
+            return reconstruct_path(came_from, node, start)
 
+        # Add all possible nodes based on its neighbors
         moves = [(0, -1), (-1, 0), (0, 1), (1, 0)]
         if i > 0 and graph[i-1][j] != 'x':
             if j > 0 and graph[i][j-1] != 'x': moves.append((-1, -1))
@@ -201,14 +208,17 @@ def Astar(graph, start, goal, heur):
             
         for ci, cj in moves:
             neighbor = (i+ci, j+cj)
+            
+            # check if the move is on the board, not on a wall, and not already visited
             if node_isValid(graph, neighbor) and neighbor not in closed:
                 tentative_g_score = g_score[f'{i}, {j}'] + 1
-                if tentative_g_score < g_score[f'{neighbor[0]}, {neighbor[1]}'] or neighbor not in open:
+                if tentative_g_score < g_score[f'{neighbor[0]}, {neighbor[1]}'] or neighbor not in open_set:
                     came_from[f'{neighbor[0]}, {neighbor[1]}'] = node
                     g_score[f'{neighbor[0]}, {neighbor[1]}'] = tentative_g_score
                     f_score[f'{neighbor[0]}, {neighbor[1]}'] = tentative_g_score + getHeur(heur, neighbor[0], neighbor[1], goal[0], goal[1])
                     if neighbor not in open:
                         heapq.heappush(open, (f_score[f'{neighbor[0]}, {neighbor[1]}'], neighbor))
+                        open_set.append(neighbor)
     return None
 
 #Saves a found path
@@ -239,10 +249,11 @@ def getHeur(heur, x, y, gx, gy):
 
 
 def main():
-    path = ''           # path to gridworld file
-    method = 'Astar'       # Default to A* search
-    heur = 'HV'      # Default to chebyshev heuristic
+    # path = ''           # path to gridworld file
+    # method = 'Astar'       # Default to A* search
+    # heur = 'HV'      # Default to chebyshev heuristic
 
+    '''
     for i in range(len(sys.argv)):
         if sys.argv[i] == '-i':
             path = os.path.abspath(sys.argv[i+1])
@@ -252,29 +263,47 @@ def main():
             heur = sys.argv[i+1]
     if path == '':
         exit(1)
+    '''
+    sys.setrecursionlimit(10**6)
+    f = open("answers.txt", "a")
+    methods = ['DFS', 'BFS', 'Astar']
+    heuristics = ['S', 'M', 'HV']
+    for i in range(18):
+        path = f'./inputs/{i+1}.txt'
+        fp = open(path, 'r', encoding='utf-8')
+        lines = fp.readlines()
+        fp.close()
+        width = int(lines[0])
+        height = int(lines[1])
+        # delete the first two lines of the file with the width and height specifiers
+        del lines[0]
+        del lines[0]
 
-    fp = open(path, 'r', encoding='utf-8')
-    lines = fp.readlines()
-    fp.close()
-    width = int(lines[0])
-    height = int(lines[1])
-    # delete the first two lines of the file with the width and height specifiers
-    del lines[0]
-    del lines[0]
+        start, goal, world = build(lines)
+        f.write(f'Input file: {i+1} \n')
+        for method in methods:
+            if method == 'Astar':
+                for heur in heuristics:
+                    path = Astar(world, start, goal, heur)
+                    if path == None: f.write(f'Astar, {heur}, No path found \n')
+                    else: f.write(f'Astar, {heur}, Cost={len(path)} \n')
+            elif method == 'DFS':
+                path = DFS(world, start, [], set())
+                if path == None: f.write(f'DFS, No path found')
+                else: f.write(f'DFS, Cost={len(path)}')
+            elif method == 'BFS':
+                path = BFS(world, start[0], start[1])
+                if path == None: f.write(f'BFS, No path found')
+                else: f.write(f'BFS, Cost={len(path)}')
+            f.write('\n')
+    f.close()
 
-    start, goal, world = build(lines)
-
-    if method == 'Astar':
-        path = Astar(world, start, goal, heur)
-    elif method == 'DFS':
-        path = DFS(world, start, [], set())
-    elif method == 'BFS':
-        path = BFS(world, start[0], start[1])
-    
+    '''
     if path == None: print('No path found.')
     else:
         print(f'A* search: Cost={len(path)}. Heuristic={heur} \n', path) if method == 'Astar' else print(f'{method} search: Cost={len(path)} \n', path)
-
+    '''
+    
 if __name__ == "__main__":
     main()
 
