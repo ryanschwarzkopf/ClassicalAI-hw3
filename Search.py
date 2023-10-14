@@ -146,6 +146,24 @@ def isValid(graph, vis, row, col, nRow, nCol, x, y):
             return False   
     return True
 
+def node_isValid(graph, node):
+    i, j = node[0], node[1]
+    if i >= 0 and j >= 0 and i < len(graph) and j < len(graph[0]) and graph[i][j] != 'x':
+        return True
+    return False
+
+def reconstruct_path(came_from, node):
+        print(came_from)
+        path = [node]
+        i, j = node[0], node[1]
+        temp = f'{i}, {j}'
+        while temp in came_from:
+            temp = f'{node[0]}, {node[1]}'
+            node = came_from[temp]
+            path.append(node)
+        path.reverse()
+        return path
+
 '''
 1. Start with a tree that contains only the start state
 2. Pick a fringe node n with the smallest heuristic.
@@ -154,16 +172,24 @@ def isValid(graph, vis, row, col, nRow, nCol, x, y):
 5. Go to 2
 (All actions have the same cost, so we can prioritize based on only the heuristic)
 '''
-def Astar(graph, at, goal, path, curr, heur):
-    h = getHeur(heur, at[0], at[1], goal[0], goal[1])
-    heapq.heappush(curr, (h,at))
-    while curr:
-        node = heapq.heappop(curr)
-        print(node)
-        i, j = node[1][0], node[1][1]
-        path.append((i,j))
+def Astar(graph, start, goal, heur):
+    open, closed = [], []
+    heapq.heappush(open, (0, start))
+    
+    came_from = {}
+    g_score = {f'{i}, {j}': float('inf') for i in range(len(graph)) for j in range(len(graph[0]))}
+    g_score[f'{start[0]}, {start[1]}'] = 0
+    f_score = {f'{i}, {j}': float('inf') for i in range(len(graph)) for j in range(len(graph[0]))}
+    f_score[f'{start[0]}, {start[1]}'] = getHeur(heur,start[0],start[1],goal[0],goal[1])
+    
+    while open:
+        # print(came_from)
+        junk, node = heapq.heappop(open)
+        i, j = node[0], node[1]
+        closed.append(node)
         if graph[i][j] == 'g':
-            return path
+            print(came_from[f'{i}, {j}'])
+            return reconstruct_path(came_from, node)
 
         moves = [(0, -1), (-1, 0), (0, 1), (1, 0)]
         if i > 0 and graph[i-1][j] != 'x':
@@ -172,14 +198,17 @@ def Astar(graph, at, goal, path, curr, heur):
         if i < len(graph)-1 and graph[i+1][j] != 'x':
             if j > 0 and graph[i][j-1] != 'x': moves.append((1, -1))
             if j < len(graph[0])-1 and graph[i][j+1] != 'x': moves.append((1, 1))
-
+            
         for ci, cj in moves:
-            if graph[ci][cj] == 'x' and ci >= 0 and cj >= 0 and ci < len(graph) and cj < len(graph[0]):
-                continue
-            newi=i+ci
-            newj=j+cj
-            heuristic = getHeur(heur, newi, newj, goal[0], goal[1])
-            heapq.heappush(curr, (heuristic,[newi,newj]))
+            neighbor = (i+ci, j+cj)
+            if node_isValid(graph, neighbor) and neighbor not in closed:
+                tentative_g_score = g_score[f'{i}, {j}'] + 1
+                if tentative_g_score < g_score[f'{neighbor[0]}, {neighbor[1]}'] or neighbor not in open:
+                    came_from[f'{neighbor[0]}, {neighbor[1]}'] = node
+                    g_score[f'{neighbor[0]}, {neighbor[1]}'] = tentative_g_score
+                    f_score[f'{neighbor[0]}, {neighbor[1]}'] = tentative_g_score + getHeur(heur, neighbor[0], neighbor[1], goal[0], goal[1])
+                    if neighbor not in open:
+                        heapq.heappush(open, (f_score[f'{neighbor[0]}, {neighbor[1]}'], neighbor))
     return None
 
 #Saves a found path
@@ -236,8 +265,7 @@ def main():
     start, goal, world = build(lines)
 
     if method == 'Astar':
-        
-        path = Astar(world, start, goal, [], [], heur)
+        path = Astar(world, start, goal, heur)
     elif method == 'DFS':
         path = DFS(world, start, [], set())
     elif method == 'BFS':
